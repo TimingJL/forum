@@ -37,4 +37,46 @@ Because there is no Javascript interpreter for Rails on Ubuntu Operation System,
 $ bundle install
 ```
 
-Then run the `rails server` and go to `http://localhost:3000` to make sure everything is correct.  
+Then run the `rails server` and go to `http://localhost:3000` to make sure everything is correct.      
+
+
+Let's first do the ability to create a post, and then we'll add users, and assign the post to the users. After that we'll add the ability to add comments to the individual post.
+
+
+Let's start by generating a model.
+```console
+$ rails g model post title:string content:text
+$ rake db:migrate
+```
+
+
+From here, let's generate a controller.
+```console
+$ rails g controller posts
+```
+
+And we create index action to loop through all the various posts.       
+In `app/controllers/posts_controller.rb`
+```ruby
+class PostsController < ApplicationController
+	def index
+	end
+end
+```
+
+Then I'm gonna open up the routes file.        
+In `config/routes.rb`
+```ruby
+Rails.application.routes.draw do
+  resources :posts
+  root 'posts#index'
+end
+```
+
+Let's create the view file.
+
+
+
+
+
+To be continued...
