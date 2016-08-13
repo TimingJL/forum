@@ -85,7 +85,7 @@ Save that, run `bundle install` and restart our server.
 
 Then, under `app/views/posts`, let's create a view file and save it as `index.html.haml`. 
 ```haml
-%h1 This is the index palceholder text
+%h1 This is the index placeholder text
 ``
 
 
@@ -223,7 +223,25 @@ And then let's create the edit page under `app/views/posts` and save the file as
 = link_to "Cancel", post_path
 ```
 
+# Loops Through All Of The Posts
+Now, let's loop through all of the posts inside of our post index action.      
+In `app/controllers/posts_controller.rb`
+```ruby
+def index
+	@posts = Post.all.order("created_at DESC")
+end
+```
 
+In the `app/views/posts/index.html.haml`
+```haml
+- @posts.each do |post|
+	%h2= post.title
+	%p
+		Published at
+		= time_ago_in_words(post.created_at)
+
+= link_to "New Post", new_post_path
+```
 
 
 
