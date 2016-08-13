@@ -291,4 +291,66 @@ $ rake db:migrate
 Then we restart the server and go to `http://localhost:3000/users/sign_up`
 ![image](https://github.com/TimingJL/forum/blob/master/pic/sign_up.jpeg)
 
+
+
+
+The next thing we want to do is build out the post from the current user.         
+In `app/controllers/posts_controller.rb`
+```ruby
+def new
+	@post = current_user.posts.build
+end
+
+def create
+	@post = current_user.posts.build(post_params)
+
+	if @post.save
+		redirect_to @post
+	else
+		render 'new'
+	end
+end
+```
+
+So next what we want to do is add association between the post model and the user model.        
+In `app/models/posts.rb`
+```ruby
+class Post < ApplicationRecord
+	belongs_to :user
+end
+```
+
+In `app/models/user.rb`
+```ruby
+class User < ApplicationRecord
+  # Include default devise modules. Others available are:
+  # :confirmable, :lockable, :timeoutable and :omniauthable
+  devise :database_authenticatable, :registerable,
+         :recoverable, :rememberable, :trackable, :validatable
+  has_many :posts
+end
+```
+
+```console
+$ rails g migration add_user_id_to_posts user_id:integer
+$ rake db:migrate
+```
+
+After assigning the user_id to all of the post, let's go to `app/views/posts/index.html.haml` to make sure it work.
+```haml
+- @posts.each do |post|
+	%h2= link_to post.title, post
+	%p
+		Published at
+		= time_ago_in_words(post.created_at)
+		by
+		= post.user.email
+
+= link_to "New Post", new_post_path
+```
+![image](https://github.com/TimingJL/forum/blob/master/pic/add_user_id.jpeg)
+
+
+
+
 To be continued...
