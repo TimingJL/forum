@@ -235,7 +235,7 @@ end
 In the `app/views/posts/index.html.haml`
 ```haml
 - @posts.each do |post|
-	%h2= post.title
+	%h2= link_to post.title, post
 	%p
 		Published at
 		= time_ago_in_words(post.created_at)
@@ -243,8 +243,52 @@ In the `app/views/posts/index.html.haml`
 = link_to "New Post", new_post_path
 ```
 
+# User
+Next thing we need to do is install devise by generator.
+```console
+$ rails generate devise:install
 
 
+===============================================================================
 
+Some setup you must do manually if you haven't yet:
+
+  1. Ensure you have defined default url options in your environments files. Here
+     is an example of default_url_options appropriate for a development environment
+     in config/environments/development.rb:
+
+       config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
+
+     In production, :host should be set to the actual host of your application.
+
+  2. Ensure you have defined root_url to *something* in your config/routes.rb.
+     For example:
+
+       root to: "home#index"
+
+  3. Ensure you have flash messages in app/views/layouts/application.html.erb.
+     For example:
+
+       <p class="notice"><%= notice %></p>
+       <p class="alert"><%= alert %></p>
+
+  4. You can copy Devise views (for customization) to your app by running:
+
+       rails g devise:views
+
+===============================================================================
+```
+
+Let's do the step 1 and step 3.
+
+
+Next thing we need to do is run the generator to create a model.      
+```console
+$ rails generate devise user
+$ rake db:migrate
+```
+
+Then we restart the server and go to `http://localhost:3000/users/sign_up`
+![image](https://github.com/TimingJL/forum/blob/master/pic/sign_up.jpeg)
 
 To be continued...
