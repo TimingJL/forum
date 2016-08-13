@@ -351,6 +351,224 @@ After assigning the user_id to all of the post, let's go to `app/views/posts/ind
 ![image](https://github.com/TimingJL/forum/blob/master/pic/add_user_id.jpeg)
 
 
+# Structure and Styling
 
+First, let's rename `application.html.erb` to `application.html.haml` under `app/views/layouts` and tweak the html to haml.
+```haml
+!!!
+%html
+%head
+	%title TimingJL's Rails Forum
+	= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true
+	%link{ rel: "stylesheet", href: "http://fonts.googleapis.com/css?family=Lato:300,400,700", type: "text/css"}
+	%link{:rel => "stylesheet", :href => "http://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.1/normalize.min.css"}/
+	= javascript_include_tag 'application', 'data-turbolinks-track' => true
+	= csrf_meta_tags
+%body
+	%header.main_header.clearfix
+		.wrapper
+			#logo
+				%p= link_to "TimingJL's Rails Forum", root_path
+			#buttons
+				- if user_signed_in?
+					= link_to "New Post", new_post_path
+				- else
+					= link_to "Sign Up", new_user_registration_path
+					= link_to "Sign In", new_user_session_path
+
+	.wrapper
+		%p.notice= notice
+		%p.alert= alert
+
+	.wrapper
+		= yield
+```
+
+
+And let's define what the `.wrapper` is.       
+In `app/assets/stylesheets/application.css`, rename `application.css` to `application.css.scss`.
+```scss
+/*
+ * This is a manifest file that'll be compiled into application.css, which will include all the files
+ * listed below.
+ *
+ * Any CSS and SCSS file within this directory, lib/assets/stylesheets, vendor/assets/stylesheets,
+ * or vendor/assets/stylesheets of plugins, if any, can be referenced here using a relative path.
+ *
+ * You're free to add application-wide styles to this file and they'll appear at the bottom of the
+ * compiled file so the styles you add here take precedence over styles defined in any styles
+ * defined in the other CSS/SCSS files in this directory. It is generally better to create a new
+ * file per style scope.
+ *
+ *= require_tree .
+ *= require_self
+ */
+
+ body {
+ 	font-family: 'Lato', sans-serif;
+ 	background: #EDEFF0;
+ }
+
+.wrapper {
+	width: 60%;
+	max-width: 1140px;
+	margin: 0 auto;
+}
+
+.clearfix:before, .clearfix:after {
+	content: " ";
+	display: table;
+}
+
+.clearfix:after {
+	clear: both;
+}
+
+.main_header {
+	width: 100%;
+	margin: 0 auto;
+	background: white;
+	#logo {
+		float: left;
+		a {
+			text-transform: uppercase;
+			font-weight: 700;
+			letter-spacing: -1px;
+			font-size: 1.2rem;
+			text-decoration: none;
+			color:#397CAC;
+		}
+	}
+	#buttons {
+		float: right;
+		a {
+			line-height: 60px;
+			background: #397CAC;
+			padding: .5em 1em;
+			border-radius: 0.2em;
+			color: white;
+			text-decoration: none;
+			font-weight: 100;
+		}
+	}
+}
+
+#posts {
+	background: white;
+	padding: 2em 5%;
+	border-radius: .5em;
+	.post {
+		margin: 1em 0;
+		padding: 1em 0;
+		border-bottom: 1px solid #D1d1d1;
+		.title {
+			margin: 0;
+			a {
+				color: #397CAC;
+				text-decoration: none;
+				font-weight: 100;
+				font-size: 1.25rem;
+			}
+		}
+		.date {
+			margin-top: .25rem;
+			font-size: 0.9rem;
+			color: #B2BAC2;
+		}
+	}
+}
+
+.button {
+	color: #397CAC;
+	border: 1px solid #397CAC;
+	padding: .5em 1em;
+	border-radius: 0.2em;
+	text-decoration: none;
+	margin-right: 2%;
+}
+
+#post_content {
+	background: white;
+	padding: 2em 5%;
+	border-radius: .5em;
+	h1 {
+		font-weight: 100;
+		font-size: 2em;
+		color: #397CAC;
+		margin-top: 0;
+	}
+	p {
+		color: #B2BAC2;
+		font-size: 0.9rem;
+		font-weight: 100;
+		line-height: 1.5;
+	}
+	#comments {
+		.comment {
+			border-bottom: 1px solid #d1d1d1;
+			padding-bottom: 1em;
+			margin-bottom: 1em;
+			.content {
+				width: 75%;
+				float: left;
+			}
+			.buttons {
+				width: 25%;
+				float: left;
+				font-size: .8em;
+				text-align: right;
+				padding-top: 1.5em;
+				a {
+					color: #397CAC;
+					border: 1px solid #397CAC;
+					padding: .5em 1em;
+					border-radius: 0.2em;
+					text-decoration: none;
+					margin-right: 2%;
+				}
+			}
+			.comment_content {
+				margin: 0;
+				padding: 0;
+			}
+			.comment_author {
+				color: #397CAC;
+				margin-top: .5rem;
+				font-size: 0.6em;
+				font-weight: 700;
+			}
+		}
+		input[type="submit"] {
+			background: #397CAC;
+			border: none;
+			color: white;
+			font-weight: 100;
+			padding: .5em 1em;
+			border-radius: .2em;
+		}
+		textarea {
+			width: 100%;
+			min-height: 200px;
+			border: 1px solid #d1d1d1;
+			border-radius: .2em;
+			margin: 1em 0;
+		}
+	}
+}
+```
+
+In `app/views/posts/index.html.haml`
+```haml
+#posts
+	- @posts.each do |post|
+		.post
+			%h2.title= link_to post.title, post
+			%p.date
+				Published at
+				= time_ago_in_words(post.created_at)
+				by
+				= post.user.email
+```
+![image](https://github.com/TimingJL/forum/blob/master/pic/basic_styling.jpeg)
 
 To be continued...
