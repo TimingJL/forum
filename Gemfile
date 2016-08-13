@@ -5,7 +5,6 @@ gem 'therubyracer'
 gem 'devise'
 gem 'simple_form', github: 'kesha-antonov/simple_form', branch: 'rails-5-0'
 gem 'haml', '~> 4.0.5'
-gem 'bootstrap-sass', '~> 3.2.0.2'
 
 
 

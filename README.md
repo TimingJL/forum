@@ -73,7 +73,157 @@ Rails.application.routes.draw do
 end
 ```
 
-Let's create the view file.
+Before we create the view file, let's install a few gems for our application.       
+In `Gemfile`
+```
+gem 'devise'
+gem 'simple_form', github: 'kesha-antonov/simple_form', branch: 'rails-5-0'
+gem 'haml', '~> 4.0.5'
+```
+Save that, run `bundle install` and restart our server.
+
+
+Then, under `app/views/posts`, let's create a view file and save it as `index.html.haml`. 
+```haml
+%h1 This is the index palceholder text
+``
+
+
+# New Post
+Next, let's add the ability to create a new post and show.         
+In `app/controllers/posts_controller.rb`
+```ruby
+class PostsController < ApplicationController
+	def index
+	end
+
+	def show
+		@post = Post.find(params[:id])
+	end
+
+	def new
+		@post = Post.new
+	end
+
+	def create
+		@post = Post.new(post_params)
+
+		if @post.save
+			redirect_to @post
+		else
+			render 'new'
+		end
+	end
+
+	private
+
+	def post_params
+		params.require(:post).permit(:title, :content)
+	end
+end
+```  
+
+Then we create a new file called `new.html.haml` under `app/views/posts`.        
+In `app/views/posts/new.html.haml`
+```haml
+%h1 New Post
+
+= render 'form'
+```
+
+Now, let's create our form under `app/views/posts` and save the file as `_form.html.haml`.       
+In `app/views/posts/_form.html.haml`
+```haml
+= simple_form_for @post do |f|
+	= f.input :title
+	= f.input :content
+	= f.submit
+``` 
+
+Next, let's create a show page under `app/views/posts` and save it as `show.html.haml`.
+```haml
+%h1= @post.title
+%p= @post.content
+```
+
+
+# Edit & Destroy
+Let's add the ability to edit and destory a post.       
+In our controller `app/controllers/posts_controller.rb`, the reason we are defining a private action `find_post` is because otherwise you have to copy and paste `@post = Post.find(params[:id])` four different times.
+```ruby
+class PostsController < ApplicationController
+	before_action :find_post, only: [:show, :edit, :update, :destroy]
+	
+	def index
+	end
+
+	def show		
+	end	
+
+	def new
+		@post = Post.new
+	end
+
+	def create
+		@post = Post.new(post_params)
+
+		if @post.save
+			redirect_to @post
+		else
+			render 'new'
+		end
+	end
+
+	def edit
+	end
+
+	def update
+		if @post.update(post_params)
+			redirect_to @post
+		else
+			render 'edit'
+		end
+	end
+
+	def destroy
+		@post.destroy
+		redirect_to root_path
+	end
+
+
+	private
+
+	def find_post
+		@post = Post.find(params[:id])
+	end
+
+	def post_params
+		params.require(:post).permit(:title, :content)
+	end
+end
+```
+
+
+In our show page `app/views/posts/show.html.haml`
+```haml
+%h1= @post.title
+%p= @post.content
+
+= link_to "Edit", edit_post_path(@post)
+= link_to "Delete", post_path(@post), method: :delete, data: { confirm: "Are you sure?" }
+= link_to "Home", root_path
+```
+
+And then let's create the edit page under `app/views/posts` and save the file as `edit.html.haml`
+```haml
+%h1 Edit Post
+
+= render 'form'
+
+= link_to "Cancel", post_path
+```
+
+
 
 
 
