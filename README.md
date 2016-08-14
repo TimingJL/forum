@@ -370,11 +370,7 @@ First, let's rename `application.html.erb` to `application.html.haml` under `app
 			#logo
 				%p= link_to "TimingJL's Rails Forum", root_path
 			#buttons
-				- if user_signed_in?
-					= link_to "New Post", new_post_path
-				- else
-					= link_to "Sign Up", new_user_registration_path
-					= link_to "Sign In", new_user_session_path
+				= link_to "New Post", new_post_path
 
 	.wrapper
 		%p.notice= notice
@@ -581,5 +577,67 @@ In `app/views/posts/show.html.haml`
 	= link_to "Edit", edit_post_path(@post), class: "button"
 	= link_to "Delete", post_path(@post), method: :delete, data: { confirm: "Are you sure you want to do this?" }, class: "button"
 ```
+
+
+# SignIn, SignOut and SignUp
+
+Only the sign-in user can new a post.      
+In `app/views/layouts/application.html.haml`
+```haml
+!!!
+%html
+%head
+  %title TimingJL's Rails Forum
+  = stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true
+  %link{ rel: "stylesheet", href: "http://fonts.googleapis.com/css?family=Lato:300,400,700", type: "text/css"}
+  %link{:rel => "stylesheet", :href => "http://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.1/normalize.min.css"}/
+  = javascript_include_tag 'application', 'data-turbolinks-track' => true
+  = csrf_meta_tags
+%body
+  %header.main_header.clearfix
+    .wrapper
+      #logo
+        %p= link_to "TimingJL's Rails Forum", root_path
+      #buttons
+        - if user_signed_in?
+          = link_to "New Post", new_post_path
+          = link_to "Sign Out", destroy_user_session_path
+        - else
+          = link_to "Sign Up", new_user_registration_path
+          = link_to "Sign In", new_user_session_path
+
+  .wrapper
+    %p.notice= notice
+    %p.alert= alert
+
+  .wrapper
+    = yield
+```
+The :method => :delete part is required if you use the default HTTP method. To change it, you will need to tell Devise this: Under app/config/initializers/devise.rb change
+```
+# config/initializers/devise.rb
+# The default HTTP method used to sign out a resource. Default is :delete.
+config.sign_out_via = :delete
+```
+
+to
+
+```
+# config/initializers/devise.rb
+# The default HTTP method used to sign out a resource. Default is :delete.
+config.sign_out_via = :get
+```
+
+In `app/controllers/posts_controller.rb`
+```ruby
+before_action :authentication_user!, except: [:index, :show]
+```
+So we have the ability to create a post if you sign-in.
+
+
+# Comment
+The last thing we need to do is add comments for each post.
+
+
 
 To be continued...
