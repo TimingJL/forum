@@ -571,4 +571,15 @@ In `app/views/posts/index.html.haml`
 ```
 ![image](https://github.com/TimingJL/forum/blob/master/pic/basic_styling.jpeg)
 
+### Style Show Page
+In `app/views/posts/show.html.haml`
+```haml
+#post_content
+	%h1= @post.title
+	%p= @post.content
+
+	= link_to "Edit", edit_post_path(@post), class: "button"
+	= link_to "Delete", post_path(@post), method: :delete, data: { confirm: "Are you sure you want to do this?" }, class: "button"
+```
+
 To be continued...
