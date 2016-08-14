@@ -637,6 +637,189 @@ So we have the ability to create a post if you sign-in.
 
 # Comment
 The last thing we need to do is add comments for each post.
+```console
+$ rails g model Comment comment:text post:references user:references
+$ rake db:migrate
+```
+
+### Association
+In `app/models/post.rb`
+```ruby
+class Post < ApplicationRecord
+	belongs_to :user
+	has_many :comments
+end
+```
+
+In `app/models/user.rb`
+```ruby
+class User < ApplicationRecord
+  # Include default devise modules. Others available are:
+  # :confirmable, :lockable, :timeoutable and :omniauthable
+  devise :database_authenticatable, :registerable,
+         :recoverable, :rememberable, :trackable, :validatable
+  has_many :posts
+  has_many :comments
+end
+```
+
+### Some Routes
+Now, we need to create some routes for this.
+In `config/routes.rb`
+```ruby
+Rails.application.routes.draw do
+  devise_for :users
+  resources :posts do
+  	resources :comments
+  end
+ 
+  root 'posts#index'
+end
+```
+
+### Controller
+Next, let's create a controller.
+```console
+$ rails g controller Comments
+```
+
+
+### Add Comments
+In `app/controllers/comments_controller.rb`
+```ruby
+class CommentsController < ApplicationController
+	def create
+		@post = Post.find(params[:post_id])
+		@comment = @post.comments.create(params[:comment].permit(:comment))
+		@comment.user_id = current_user.id if current_user	
+
+		if @comment.save
+			redirect_to post_path(@post)
+		else
+			render 'posts/show'
+		end
+	end
+end
+```
+
+
+Next, we need to add some views for our comments.        
+In `app/views/comments/`
+	1. _form.html.haml
+	2. _comment.html.haml
+
+In `app/views/comments/_comment.html.haml`
+```haml
+.comment
+	%p= comment.comment
+	%p= comment.user.email
+```
+
+
+
+In `app/views/comments/_form.html.haml`
+```haml
+= simple_form_for([@post, @post.comments.build]) do |f|
+	= f.input :comment
+	= f.submit
+```
+
+
+And in `app/views/posts/show.html.haml`
+```haml
+#post_content
+	%h1= @post.title
+	%p= @post.content
+
+	#comments
+		%h2= @post.comments.count
+		= render @post.comments
+
+		%h3 Reply to thread
+		= render "comments/form"
+
+	%br/
+	%hr/
+	%br/
+
+	= link_to "Edit", edit_post_path(@post), class: "button"
+	= link_to "Delete", post_path(@post), method: :delete, data: { confirm: "Are you sure you want to do this?" }, class: "button"
+```
+
+
+### Edit & Destroy Comments
+In `app/controllers/comments_controller.rb`
+```ruby
+class CommentsController < ApplicationController
+	before_action :find_post
+
+	def create
+		@comment = @post.comments.create(params[:comment].permit(:comment))
+		@comment.user_id = current_user.id if current_user	
+
+		if @comment.save
+			redirect_to post_path(@post)
+		else
+			render 'posts/show'
+		end
+	end
+
+	def edit
+		@comment = @post.comments.find(params[:id])
+	end
+
+	def update
+		@comment = @post.comments.find(params[:id])
+
+		if @comment.update(params[:comment].permit(:comment))
+			redirect_to post_path(@post)
+		else
+			render 'edit'
+		end
+	end
+
+	def destroy	
+		@comment = @post.comments.find(params[:id])
+		@comment.destroy
+		redirect_to post_path(@post)
+	end	
+
+
+	private
+
+	def find_post
+		@post = Post.find(params[:post_id])
+	end
+
+end
+```
+
+
+Let's go to the `app/views/comments/_comment.html.haml`
+```haml
+.comment.clearfix
+	.content
+		%p.comment_content= comment.comment
+		%p.comment_author= comment.user.email
+	.buttons
+		= link_to "Edit", edit_post_comment_path(comment.post, comment)
+		= link_to "Delete", [comment.post, comment], method: :delete, data: { confirm: "Are you sure?" }
+```
+
+
+Then. let's add a new file named `edit.html.haml` under `app/views/comments`.
+```ruby
+%h1 Edit Reply
+
+= simple_form_for([@post, @comment]) do |f|
+	= f.input :comment
+	= f.submit
+```
+
+
+
+
+
 
 
 
