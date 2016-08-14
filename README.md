@@ -15,6 +15,7 @@ https://mackenziechild.me/12-in-12/10/
 
 
 ![image](https://github.com/TimingJL/forum/blob/master/pic/index.jpeg) 
+![image](https://github.com/TimingJL/forum/blob/master/pic/comment2.jpeg)
 ![image](https://github.com/TimingJL/forum/blob/master/pic/new_post.jpeg)
 ![image](https://github.com/TimingJL/forum/blob/master/pic/edit_post.jpeg)
 
