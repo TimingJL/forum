@@ -11,7 +11,12 @@ Mackenzie Child's video really inspired me. So I decided to follow all of his ra
 This time we built a simple forum application. We have the ability to sign up and sign in / out… Add, Edit, Destroy forum posts, and users can reply to each others forum posts through comments. In this project, we use custom styling instead of bootstrap.
 
 
-https://mackenziechild.me/12-in-12/10/      
+https://mackenziechild.me/12-in-12/10/        
+
+
+![image](https://github.com/TimingJL/forum/blob/master/pic/index.jpeg) 
+![image](https://github.com/TimingJL/forum/blob/master/pic/new_post.jpeg)
+![image](https://github.com/TimingJL/forum/blob/master/pic/edit_post.jpeg)
 
 
 ### Highlights of this course
@@ -551,6 +556,16 @@ In `app/assets/stylesheets/application.css`, rename `application.css` to `applic
 		}
 	}
 }
+
+.form-input {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
 ```
 
 In `app/views/posts/index.html.haml`
@@ -630,7 +645,7 @@ config.sign_out_via = :get
 
 In `app/controllers/posts_controller.rb`
 ```ruby
-before_action :authentication_user!, except: [:index, :show]
+before_action :authenticate_user!, except: [:index, :show]
 ```
 So we have the ability to create a post if you sign-in.
 
@@ -732,7 +747,9 @@ And in `app/views/posts/show.html.haml`
 	%p= @post.content
 
 	#comments
-		%h2= @post.comments.count
+		%h2
+			= @post.comments.count
+			Comments
 		= render @post.comments
 
 		%h3 Reply to thread
@@ -815,12 +832,35 @@ Then. let's add a new file named `edit.html.haml` under `app/views/comments`.
 	= f.input :comment
 	= f.submit
 ```
+![image](https://github.com/TimingJL/forum/blob/master/pic/comment2.jpeg)
+
+
+In `app/views/posts/_from.html.haml`
+```haml
+= simple_form_for @post do |f|
+	= f.input :title, input_html: { class: 'form-input' }
+	= f.input :content, input_html: { class: 'form-input' }
+	= f.button :submit, class: "button"
+```
+
+In `app/views/posts/new.html.haml`
+```haml
+#post_content
+	%h1 New Post
+	= render 'form'
+```
+![image](https://github.com/TimingJL/forum/blob/master/pic/new_post.jpeg)
+
+In `app/views/posts/edit.html.haml`
+```haml
+#post_content
+	%h1 Edit Post
+	= render 'form'
+	%br/
+	= link_to "Cancel", post_path, class: "button"
+```
+![image](https://github.com/TimingJL/forum/blob/master/pic/edit_post.jpeg)
 
 
 
-
-
-
-
-
-To be continued...
+Finished!

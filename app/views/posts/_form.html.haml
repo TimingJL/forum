@@ -1,4 +1,4 @@
 = simple_form_for @post do |f|
-	= f.input :title
-	= f.input :content
-	= f.submit
+	= f.input :title, input_html: { class: 'form-input' }
+	= f.input :content, input_html: { class: 'form-input' }
+	= f.button :submit, class: "button"
