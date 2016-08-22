@@ -4,8 +4,9 @@
 ![Rails version](https://img.shields.io/badge/Rails-v5.0.0-blue.svg)
 ![Ruby version](https://img.shields.io/badge/Ruby-v2.3.1p112-red.svg)
 
-Mackenzie Child's video really inspired me. So I decided to follow all of his rails video tutorial to learn how to build a web app. Through the video, I would try to build the web app by my self and record the courses step by step in text to facilitate the review.
+Mackenzie Child's video really inspired me. So I decided to follow all of his rails video tutorial to learn how to build a web app. Through the video, I would try to build the web app by my self and record the courses step by step in text to facilitate the review.             
 
+![image](https://github.com/TimingJL/forum/blob/master/pic/machenziechild.jpeg) 
 
 # Project 10: How To Build A Forum With Rails          
 This time we built a simple forum application. We have the ability to sign up and sign in / out… Add, Edit, Destroy forum posts, and users can reply to each others forum posts through comments. In this project, we use custom styling instead of bootstrap.
